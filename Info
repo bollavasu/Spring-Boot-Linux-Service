@@ -1,0 +1,55 @@
+
+https://stackoverflow.com/questions/21503883/spring-boot-application-as-a-service
+
+1)add configuration executable as true as following in pom.xml
+
+    <build>
+	    <finalName>SpringBootRest</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+                    <executable>true</executable>
+                </configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+2)build the project
+
+3)create a symbolic link
+  sudo ln -s /home/ubuntu/Spring-Boot-Rest-Template-master/target/SpringBootRest.jar /etc/init.d/SpringBootRest
+
+4)create SpringBootRest.service in /etc/systemd/system folder
+  sudo touch /etc/systemd/system/SpringBootRest.service
+
+5)add the following in SpringBootRest.service file  (sudo nano /etc/systemd/system/SpringBootRest.service)
+
+[Unit]
+Description=A Spring Boot application
+After=syslog.target
+ 
+[Service]
+User=ubuntu
+ExecStart=/home/ubuntu/jdk1.8.0_211/bin/java -jar /home/ubuntu/Spring-Boot-Rest-Template-master/target/SpringBootRest.jar 
+SuccessExitStatus=143 
+ 
+[Install] 
+WantedBy=multi-user.target
+
+6)notify systemd about new service file
+  sudo systemctl daemon-reload
+  
+7)enable the Service
+  sudo systemctl enable SpringBootRest.service
+  
+8)start the Service
+  sudo systemctl start SpringBootRest
+  
+9)check the Service status
+  sudo systemctl status SpringBootRest
+  
+10)test the application
+   curl http://localhost:8080/
+  
